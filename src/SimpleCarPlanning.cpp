@@ -200,7 +200,16 @@ void SimpleCarPlanning::plan()
 
         // print the path to screen
         // path->print(std::cout);
-        path -> as<oc::PathControl>() -> asGeometric().printAsMatrix(std::cout);
+        // path -> as<oc::PathControl>() -> asGeometric().printAsMatrix(std::cout);
+        path -> as<oc::PathControl>() -> printAsMatrix(std::cout);
+
+        // // print something of PathControl to have an insight
+        // auto controlDurations = path -> as<oc::PathControl>() -> getControlDurations();
+        // for(std::vector<double>::iterator vit = controlDurations.begin(), 
+        //                                 vend = controlDurations.end();vit != vend; vit++)
+        // {
+        //     std::cout << *vit << std::endl;
+        // }
 
         // Save the path matrix into the path file
         // For SE(2) states there are three numbers per line: x, y, and θ
@@ -209,7 +218,7 @@ void SimpleCarPlanning::plan()
             std::cerr << "Cannot open output path file!" << std::endl;
             exit(EXIT_FAILURE);
         }
-        path -> as<oc::PathControl>() -> asGeometric().printAsMatrix(path_file);
+        path -> as<oc::PathControl>() -> printAsMatrix(path_file);
     }
     else
         std::cout << "No solution found" << std::endl;
@@ -263,8 +272,10 @@ void SimpleCarPlanning::planWithApp()
         std::cout << "Found solution:" << std::endl;
 
         // print the path to screen
-        // path->print(std::cout);
-        path.asGeometric().printAsMatrix(std::cout);
+        // path -> print(std::cout);
+        // path.asGeometric().printAsMatrix(std::cout);
+        path.printAsMatrix(std::cout);
+        
 
         // Save the path matrix into the path file
         // For SE(2) states there are three numbers per line: x, y, and θ
@@ -273,7 +284,8 @@ void SimpleCarPlanning::planWithApp()
             std::cerr << "Cannot open output path file!" << std::endl;
             exit(EXIT_FAILURE);
         }
-        path.asGeometric().printAsMatrix(path_file);
+        // path.asGeometric().printAsMatrix(path_file);
+        path.printAsMatrix(path_file);
     }
     else
         std::cout << "No solution found" << std::endl;

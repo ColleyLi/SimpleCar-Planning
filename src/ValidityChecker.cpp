@@ -50,14 +50,16 @@ ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateVa
 
 bool ValidityChecker::isValid(const ob::State* state) const
 {
-    return this->clearance(state) > 0.0;
+    return this -> clearance(state) > 0.0;
 }
 
 double ValidityChecker::clearance(const ob::State* state) const
 {
-    const ob::RealVectorStateSpace::StateType* state2D =
-        state -> as<ob::RealVectorStateSpace::StateType>();
-    double x = state2D -> values[0];
-    double y = state2D -> values[1];
-    return sqrt((x-5.0)*(x-5.0) + (y-5.0)*(y-5.0)) - 4;
+    const auto *se2state = state -> as<ob::SE2StateSpace::StateType>();
+    const auto *pos = se2state -> as<ob::RealVectorStateSpace::StateType>(0);
+    double x = pos -> values[0];
+    double y = pos -> values[1];
+    const auto *rot = se2state -> as<ob::SO2StateSpace::StateType>(1);
+
+    return sqrt((x-2.0)*(x-2.0)+(y-2.0)*(y-2.0)) - 9;
 }
