@@ -2,8 +2,8 @@
 import numpy
 import matplotlib.pyplot as plt
 
-# data = numpy.loadtxt('../exec/simple_car_path.txt')
-data = numpy.loadtxt('../exec/simple_car_path_app.txt')
+data = numpy.loadtxt('../exec/simple_car_path.txt')
+#data = numpy.loadtxt('../exec/simple_car_path_app.txt')
 # fig = plt.figure()
 # ax = fig.gca(projection='3d')
 # ax.plot(data[:,1],data[:,2],data[:,3],'.-')
