@@ -12,13 +12,17 @@ MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 # Check C++11 support
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+
 find_package(ompl)
 MESSAGE("Your OMPL version: " ${OMPL_VERSION})
+find_package(ACADO REQUIRED)
 
 # Set header file directory
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${OMPL_INCLUDE_DIRS}
+  ${ACADO_INCLUDE_DIRS}
 )
 
 # Set output library directory
@@ -57,3 +61,5 @@ target_link_libraries(SimpleCarMain
 # target_link_libraries(RigidBodyPlanningWithODESolverAndControls
 #   ${OMPL_LIBRARIES}
 # )
+add_executable(MPC src/MPC.cpp)
+target_link_libraries(MPC ${ACADO_SHARED_LIBRARIES})
