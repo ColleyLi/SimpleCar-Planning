@@ -46,16 +46,16 @@ int main( )
 
     DMatrix Q(3,3);
     Q.setIdentity();
-	Q(0,0) = 1.0;
-	Q(1,1) = 1.0;
-	Q(2,2) = 1.0;
+	Q(0,0) = 0.1;
+	Q(1,1) = 0.1;
+	Q(2,2) = 0.1;
 
 
     DVector r(3);
-    // r.setAll( 0.0 );
-        r(0) = 26.01760; 
-        r(1) = -0.81004;
-        r(2) = 3.14145;
+    r.setAll( 0.0 );
+        //r(0) = 26; 
+        //r(1) = -20;
+        //r(2) = 3.14145;
 
 
     Function h2;
@@ -69,29 +69,29 @@ int main( )
     Q_end.setIdentity();
 	Q_end(0,0) = 1.0;
 	Q_end(1,1) = 1.0;
-	Q_end(2,2) = 5.0;
+	Q_end(2,2) = 1.0;
 
 
     DVector r_end(3);
-        // r.setAll( 0.0 );
-        r_end(0) = 26.01760; 
-        r_end(1) = -0.81004;
-        r_end(2) = 3.14145;
+        //r.setAll( 0.0 );
+        //r_end(0) = 26.01760; 
+        //r_end(1) = -0.81004;
+        //r_end(2) = 3.14145;
 
 
     // DEFINE AN OPTIMAL CONTROL PROBLEM:
     // ----------------------------------
     const double t_start = 0.0;
-    const double t_end   = 15.0;
+    const double t_end   = 5.0;
 
-    OCP ocp( t_start, t_end, 20 );
+    OCP ocp( t_start, t_end, 15 );
 
     ocp.minimizeLSQ( Q, h1, r );
-    ocp.minimizeLSQEndTerm( Q_end, h2, r_end );
+    //ocp.minimizeLSQEndTerm( Q_end, h2, r_end );
 
 	ocp.subjectTo( f );
 
-	ocp.subjectTo( -0.5 <= U0 <= 0.5 );
+	ocp.subjectTo( -1.5 <= U0 <= 1.5 );
         ocp.subjectTo( -0.6 <= U1 <= 0.6 );
         ocp.subjectTo( -3.1416 <= theta <= 3.1416 );
 
@@ -101,7 +101,7 @@ int main( )
 	RealTimeAlgorithm alg( ocp,0.1 );
 	alg.set( KKT_TOLERANCE, 1e-04 );
         alg.set( INTEGRATOR_TYPE, INT_RK78);
-        alg.set( PLOT_RESOLUTION, MEDIUM ) ;
+        //alg.set( PLOT_RESOLUTION, MEDIUM ) ;
 	
         VariablesGrid myReference; myReference.read( "path.txt" );// read the reference
         StaticReferenceTrajectory reference( myReference );
@@ -112,7 +112,7 @@ int main( )
 
     // SETTING UP THE SIMULATION ENVIRONMENT:
     // --------------------------------------
-	SimulationEnvironment sim( 0.0,250.0,process,controller );
+	SimulationEnvironment sim( 0.0,160.0,process,controller );
 
 	DVector x0(3);
 	x0(0) = 0.0;
@@ -141,8 +141,8 @@ int main( )
 	//window.addSubplot( feedbackControl(0),      "velocity [m/s]" );
 	//window.addSubplot( feedbackControl(1),      "steering angle [rad]" );
 	//window.plot();
-        //diffStates.printToFile("pathMPC.txt");
-        diffStates.print();
+        //diffStates.printToFile(  );
+        diffStates.print( "pathMPC.txt" );
 
 
     return 0;
