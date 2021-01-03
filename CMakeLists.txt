@@ -32,6 +32,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 add_library(${PROJECT_NAME} SHARED
   src/SimpleCarPlanning.cpp
   src/ValidityChecker.cpp
+  src/RRTX.cpp
 )
 # Link other libraries if necessary
 target_link_libraries(${PROJECT_NAME}
@@ -40,7 +41,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Set output executable directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/exec)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 # Add executable files
 add_executable(SimpleCarMain src/SimpleCarMain.cpp)

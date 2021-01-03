@@ -2,7 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-file_name = '../exec/MPC_path.txt'
+file_name = '../bin/MPC_path.txt'
 
 MPC_path = list()
 with open(file_name) as path_file:

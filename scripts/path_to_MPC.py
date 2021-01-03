@@ -6,7 +6,7 @@ Created on Thu Dec 31 21:40:33 2020
 
 import numpy as np
 
-a = np.loadtxt('../exec/simple_car_path_app.txt') # load the reference as a 2D ndarray
+a = np.loadtxt('../bin/simple_car_path_app.txt') # load the reference as a 2D ndarray
 
 b = np.delete(a, np.s_[3:5], 1) # delete control elements
 # b = a

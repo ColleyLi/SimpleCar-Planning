@@ -41,12 +41,15 @@
 
 #include "SimpleCarPlanning.h"
 #include "ValidityChecker.h"
+#include "RRTX.h"
 
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
 #include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 #include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <ompl/geometric/PathSimplifier.h>
 #include <iostream>
 #include <fstream>
 #include <boost/math/constants/constants.hpp>
@@ -59,6 +62,8 @@ SimpleCarPlanning::SimpleCarPlanning()
     max_steering_angle_ = 0.6;
     path_filename_ = "simple_car_path.txt";
     path_filename_app_ = "simple_car_path_app.txt";
+    path_filename_geometric_ = "simple_car_path_geometric.txt";
+    path_filename_geometric_app_ = "simple_car_path_geometric_app.txt";
 }
 
 void SimpleCarPlanning::propagate(const ob::State *start, const oc::Control *control, const double duration, ob::State *result)
@@ -275,11 +280,166 @@ void SimpleCarPlanning::planWithApp()
         // path -> print(std::cout);
         // path.asGeometric().printAsMatrix(std::cout);
         path.printAsMatrix(std::cout);
-        
 
         // Save the path matrix into the path file
         // For SE(2) states there are three numbers per line: x, y, and θ
         std::ofstream path_file(path_filename_app_.c_str());
+        if(!path_file){
+            std::cerr << "Cannot open output path file!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        // path.asGeometric().printAsMatrix(path_file);
+        path.printAsMatrix(path_file);
+    }
+    else
+        std::cout << "No solution found" << std::endl;
+}
+
+void SimpleCarPlanning::PlanGeometric()
+{
+    // construct the state space we are planning in
+    auto space(std::make_shared<ob::SE2StateSpace>());
+
+    // set the bounds for the R^2 part of SE(2)
+    ob::RealVectorBounds bounds(2);
+    bounds.setLow(-10);
+    bounds.setHigh(10);
+
+    space->setBounds(bounds);
+
+    // construct an instance of  space information from this state space
+    auto si(std::make_shared<ob::SpaceInformation>(space));
+
+    // set state validity checking for this space
+    si->setStateValidityChecker(ob::StateValidityCheckerPtr(new ValidityChecker(si)));
+
+    // create a start state
+    ob::ScopedState<ob::SE2StateSpace> start(space);
+    start->setX(-8.0);
+    start->setY(-8.0);
+    start->setYaw(0.0);
+
+    // create a goal state
+    ob::ScopedState<ob::SE2StateSpace> goal(start);
+    goal->setX(8.0);
+    goal->setY(8.0);
+    goal->setYaw(boost::math::constants::pi<double>());
+
+    // create a problem instance
+    auto pdef(std::make_shared<ob::ProblemDefinition>(si));
+
+    // set the start and goal states
+    pdef -> setStartAndGoalStates(start, goal, 0.05);
+
+    // create a planner for the defined space
+    auto planner(std::make_shared<ompl::RRTX>(si));
+    // auto planner(std::make_shared<og::RRTstar>(si));
+
+    // set the problem we are trying to solve for the planner
+    planner->setProblemDefinition(pdef);
+
+    // perform setup steps for the planner
+    planner->setup();
+
+
+    // print the settings for this space
+    si->printSettings(std::cout);
+
+    // print the problem settings
+    pdef->print(std::cout);
+
+    // attempt to solve the problem within one second of planning time
+    ob::PlannerStatus solved = planner->ob::Planner::solve(20.0);
+
+    if(solved)
+    {
+        // get the goal representation from the problem definition (not the same as the goal state)
+        // and inquire about the found path
+        ob::PathPtr path = pdef -> getSolutionPath();
+        // BSpline smoothless
+        og::PathSimplifierPtr ps;
+        auto path_geometric = path -> as<og::PathGeometric>();
+        ps -> smoothBSpline(*path_geometric);
+        std::cout << "Found solution:" << std::endl;
+
+        // print the path to screen
+        // path->print(std::cout);
+        // path -> as<oc::PathControl>() -> asGeometric().printAsMatrix(std::cout);
+        // path -> as<oc::PathControl>() -> printAsMatrix(std::cout);
+        path -> as<og::PathGeometric>() -> printAsMatrix(std::cout);
+
+        // Save the path matrix into the path file
+        // For SE(2) states there are three numbers per line: x, y, and θ
+        std::ofstream path_file(path_filename_geometric_.c_str());
+        if(!path_file){
+            std::cerr << "Cannot open output path file!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        path -> as<og::PathGeometric>() -> printAsMatrix(path_file);
+    }
+    else
+        std::cout << "No solution found" << std::endl;
+}
+
+void SimpleCarPlanning::PlanGeometricWithApp()
+{
+    oa::SE2RigidBodyPlanning setup;
+
+    std::string map_dir = "../config/";
+    std::string robot_fname = std::string(map_dir + "car1_planar_robot.dae");
+    std::string env_fname = std::string(map_dir + "Maze_planar_env.dae");
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
+
+    // plan for kinematic car in SE(2)
+    // ob::StateSpacePtr SE2(setup.getStateSpace());
+
+    // set the bounds for the R^2 part of SE(2)
+    // ob::RealVectorBounds bounds(2);
+    // bounds.setLow(-10);
+    // bounds.setHigh(10);
+    // SE2->as<ob::SE2StateSpace>()->setBounds(bounds);
+
+    // define start state
+    ob::ScopedState<ob::SE2StateSpace> start(setup.getSpaceInformation());
+    start->setX(0.0);
+    start->setY(0.0);
+    start->setYaw(0.0);
+
+    // define goal state
+    ob::ScopedState<ob::SE2StateSpace> goal(start);
+    goal->setX(26.0);
+    goal->setY(0.0);
+    goal->setYaw(boost::math::constants::pi<double>());
+
+    // set the start & goal states
+    setup.setStartAndGoalStates(start, goal, .1);
+
+    setup.setPlanner(std::make_shared<ompl::RRTX>(setup.getSpaceInformation()));
+
+    setup.setup();
+
+    ob::PlannerStatus solved = setup.solve(10.0);
+
+    if(solved)
+    {
+        // get the goal representation from the problem definition (not the same as the goal state)
+        // and inquire about the found path
+        og::PathGeometric path = setup.getSolutionPath();
+
+        // BSpline smoothless
+        og::PathSimplifierPtr ps;
+        ps -> smoothBSpline(path);
+        std::cout << "Found solution:" << std::endl;
+
+        // print the path to screen
+        // path -> print(std::cout);
+        // path.asGeometric().printAsMatrix(std::cout);
+        path.printAsMatrix(std::cout);
+
+        // Save the path matrix into the path file
+        // For SE(2) states there are three numbers per line: x, y, and θ
+        std::ofstream path_file(path_filename_geometric_app_.c_str());
         if(!path_file){
             std::cerr << "Cannot open output path file!" << std::endl;
             exit(EXIT_FAILURE);
