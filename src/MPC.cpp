@@ -1,13 +1,16 @@
+/*
 #include <acado_toolkit.hpp>
 #include <acado_gnuplot.hpp>
 #include <math.h>
+*/
 
 using namespace std;
 
-USING_NAMESPACE_ACADO
+//USING_NAMESPACE_ACADO
 
 int main()
 {
+    /*
     // INTRODUCE THE VARIABLES:
     // -------------------------
 	DifferentialState x;
@@ -143,7 +146,7 @@ int main()
 	//window.plot();
         diffStates.print("MPC_path.txt");
         //diffStates.print();
-
+    */
 
     return 0;
 }

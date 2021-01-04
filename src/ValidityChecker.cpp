@@ -41,8 +41,12 @@
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
+#include <vector>
+
+using namespace std;
 
 #include "ValidityChecker.h"
+#include "SimpleCarPlanning.h"
 
 
 ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateValidityChecker(si)
@@ -50,7 +54,7 @@ ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateVa
 
 bool ValidityChecker::isValid(const ob::State* state) const
 {
-    return this -> clearance(state) > 0.0;
+    return this -> clearance(state) <= 1e-3;
 }
 
 double ValidityChecker::clearance(const ob::State* state) const
@@ -61,5 +65,27 @@ double ValidityChecker::clearance(const ob::State* state) const
     double y = pos -> values[1];
     const auto *rot = se2state -> as<ob::SO2StateSpace::StateType>(1);
 
-    return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
+    // Define new map
+    int dim = 50;
+    std::vector<std::vector<double>> grid(dim,vector<double>(dim));;
+        
+    for(int i = 0; i < dim; i++) { 
+        for(int j = 0; j < dim; j++) {
+            if ((i > 0 && i < 5 && j > 20 && j < 25) || (i > 20 && i < 25 && j > 15 && j < 20)) {
+                grid[i][j] = 1;
+            }
+            else {
+                grid[i][j] = 1;
+            }
+        }
+    }        
+    double sum = 0;
+    for(int j = x - 1; j < x + 2; j += 1) {
+        for(int i = y - 1; i < y + 2; i += 1) {
+            sum += grid[i][j];
+        }
+    }
+    return abs(sum - 9);
+
+    //return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
 }

@@ -228,7 +228,7 @@ void SimpleCarPlanning::plan()
     else
         std::cout << "No solution found" << std::endl;
 }
-
+/*
 void SimpleCarPlanning::planWithApp()
 {
     oa::KinematicCarPlanning setup;
@@ -293,7 +293,7 @@ void SimpleCarPlanning::planWithApp()
     }
     else
         std::cout << "No solution found" << std::endl;
-}
+}*/
 
 void SimpleCarPlanning::PlanGeometric()
 {
@@ -303,7 +303,7 @@ void SimpleCarPlanning::PlanGeometric()
     // set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
     bounds.setLow(-10);
-    bounds.setHigh(10);
+    bounds.setHigh(50);
 
     space->setBounds(bounds);
 
@@ -315,14 +315,14 @@ void SimpleCarPlanning::PlanGeometric()
 
     // create a start state
     ob::ScopedState<ob::SE2StateSpace> start(space);
-    start->setX(-8.0);
-    start->setY(-8.0);
+    start->setX(4.0);
+    start->setY(4.0);
     start->setYaw(0.0);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(8.0);
-    goal->setY(8.0);
+    goal->setX(40.0);
+    goal->setY(40.0);
     goal->setYaw(boost::math::constants::pi<double>());
 
     // create a problem instance
@@ -380,7 +380,7 @@ void SimpleCarPlanning::PlanGeometric()
     else
         std::cout << "No solution found" << std::endl;
 }
-
+/*
 void SimpleCarPlanning::PlanGeometricWithApp()
 {
     oa::SE2RigidBodyPlanning setup;
@@ -449,4 +449,4 @@ void SimpleCarPlanning::PlanGeometricWithApp()
     }
     else
         std::cout << "No solution found" << std::endl;
-}
+}*/

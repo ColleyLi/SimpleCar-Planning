@@ -21,15 +21,15 @@ namespace og = ompl::geometric;
 // #include <omplapp/geometry/RigidBodyGeometry.h>
 // #include <omplapp/apps/AppBase.h>
 // #include <omplapp/config.h>
-#include <omplapp/apps/KinematicCarPlanning.h>
-#include <omplapp/apps/SE2RigidBodyPlanning.h>
-namespace oa = ompl::app;
+//#include <omplapp/apps/KinematicCarPlanning.h>
+//#include <omplapp/apps/SE2RigidBodyPlanning.h>
+//namespace oa = ompl::app;
 #endif
 
 class SimpleCarPlanning{
     public:
-        constexpr static double wheelbase_ = 0.3;
-        double track_;
+        constexpr static double wheelbase_ = 0.5;
+        double track_ = 0.5;
         double max_steering_angle_;
 
         SimpleCarPlanning();
@@ -40,9 +40,9 @@ class SimpleCarPlanning{
         void static postPropagate(const ob::State* state, const oc::Control* control, 
                         const double duration, ob::State* result);
         void plan();
-        void planWithApp();
+        //void planWithApp();
         void PlanGeometric();
-        void PlanGeometricWithApp();
+        //void PlanGeometricWithApp();
 
         std::string path_filename_;
         std::string path_filename_app_;

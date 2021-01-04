@@ -18,6 +18,7 @@ class ValidityChecker: public ob::StateValidityChecker
         virtual bool isValid(const ob::State* state) const;
 
         double clearance(const ob::State* state) const;
+
 };
 
 #endif // VALIDITY_CHECKER_H
