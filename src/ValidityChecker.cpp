@@ -72,7 +72,7 @@ double ValidityChecker::clearance(const ob::State* state) const
     for(int i = 0; i < dim; i++) { 
         for(int j = 0; j < dim; j++) {
             if ((i > 0 && i < 5 && j > 20 && j < 25) || (i > 20 && i < 25 && j > 15 && j < 20)) {
-                grid[i][j] = 1;
+                grid[i][j] = 0;
             }
             else {
                 grid[i][j] = 1;
