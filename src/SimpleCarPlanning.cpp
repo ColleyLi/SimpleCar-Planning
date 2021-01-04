@@ -234,8 +234,8 @@ void SimpleCarPlanning::planWithApp()
     oa::KinematicCarPlanning setup;
 
     std::string map_dir = "../config/";
-    std::string robot_fname = std::string(map_dir + "car1_planar_robot.dae");
-    std::string env_fname = std::string(map_dir + "Maze_planar_env.dae");
+    std::string robot_fname = std::string(map_dir + "kinematics_car.dae");
+    std::string env_fname = std::string(map_dir + "Barriers_easy_env.dae");
     setup.setRobotMesh(robot_fname);
     setup.setEnvironmentMesh(env_fname);
 
@@ -250,15 +250,15 @@ void SimpleCarPlanning::planWithApp()
 
     // define start state
     ob::ScopedState<ob::SE2StateSpace> start(setup.getSpaceInformation());
-    start->setX(0.0);
-    start->setY(0.0);
+    start->setX(80.0);
+    start->setY(-400.0);
     start->setYaw(0.0);
 
     // define goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(26.0);
-    goal->setY(0.0);
-    goal->setYaw(boost::math::constants::pi<double>());
+    goal->setX(500.0);
+    goal->setY(-80.0);
+    goal->setYaw(boost::math::constants::pi<double>()/2);
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);
@@ -386,8 +386,8 @@ void SimpleCarPlanning::PlanGeometricWithApp()
     oa::SE2RigidBodyPlanning setup;
 
     std::string map_dir = "../config/";
-    std::string robot_fname = std::string(map_dir + "car1_planar_robot.dae");
-    std::string env_fname = std::string(map_dir + "Maze_planar_env.dae");
+    std::string robot_fname = std::string(map_dir + "kinematics_car.dae");
+    std::string env_fname = std::string(map_dir + "Barriers_easy_env.dae");
     setup.setRobotMesh(robot_fname);
     setup.setEnvironmentMesh(env_fname);
 
@@ -402,15 +402,15 @@ void SimpleCarPlanning::PlanGeometricWithApp()
 
     // define start state
     ob::ScopedState<ob::SE2StateSpace> start(setup.getSpaceInformation());
-    start->setX(0.0);
-    start->setY(0.0);
+    start->setX(80.0);
+    start->setY(-400.0);
     start->setYaw(0.0);
 
     // define goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(26.0);
-    goal->setY(0.0);
-    goal->setYaw(boost::math::constants::pi<double>());
+    goal->setX(500.0);
+    goal->setY(-80.0);
+    goal->setYaw(boost::math::constants::pi<double>()/2);
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);

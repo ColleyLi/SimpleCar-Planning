@@ -61,5 +61,5 @@ double ValidityChecker::clearance(const ob::State* state) const
     double y = pos -> values[1];
     const auto *rot = se2state -> as<ob::SO2StateSpace::StateType>(1);
 
-    return sqrt((x-2.0)*(x-2.0)+(y-2.0)*(y-2.0)) - 9;
+    return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
 }
