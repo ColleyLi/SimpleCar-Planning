@@ -118,8 +118,8 @@ void SimpleCarPlanning::plan()
 
     // set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
-    bounds.setLow(-10.0);
-    bounds.setHigh(10.0);
+    bounds.setLow(0.0);
+    bounds.setHigh(20.0);
 
     space -> setBounds(bounds);
 
@@ -162,15 +162,15 @@ void SimpleCarPlanning::plan()
 
     // create a start state
     ob::ScopedState<ob::SE2StateSpace> start(space);
-    start->setX(-8.0);
-    start->setY(-8.0);
+    start->setX(2.0);
+    start->setY(2.0);
     start->setYaw(0.0);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(8.0);
-    goal->setY(8.0);
-    goal->setYaw(boost::math::constants::pi<double>());
+    goal->setX(18.0);
+    goal->setY(18.0);
+    goal->setYaw(boost::math::constants::pi<double>() / 2);
 
     // create a problem instance
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
@@ -302,8 +302,8 @@ void SimpleCarPlanning::PlanGeometric()
 
     // set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
-    bounds.setLow(-10);
-    bounds.setHigh(10);
+    bounds.setLow(0.0);
+    bounds.setHigh(20.0);
 
     space->setBounds(bounds);
 
@@ -315,15 +315,15 @@ void SimpleCarPlanning::PlanGeometric()
 
     // create a start state
     ob::ScopedState<ob::SE2StateSpace> start(space);
-    start->setX(-8.0);
-    start->setY(-8.0);
+    start->setX(2.0);
+    start->setY(2.0);
     start->setYaw(0.0);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(8.0);
-    goal->setY(8.0);
-    goal->setYaw(boost::math::constants::pi<double>());
+    goal->setX(18.0);
+    goal->setY(18.0);
+    goal->setYaw(boost::math::constants::pi<double>() / 2);
 
     // create a problem instance
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
@@ -349,7 +349,7 @@ void SimpleCarPlanning::PlanGeometric()
     pdef->print(std::cout);
 
     // attempt to solve the problem within one second of planning time
-    ob::PlannerStatus solved = planner->ob::Planner::solve(20.0);
+    ob::PlannerStatus solved = planner->ob::Planner::solve(10.0);
 
     if(solved)
     {

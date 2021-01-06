@@ -46,7 +46,24 @@
 
 
 ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateValidityChecker(si)
-{}
+{
+    map_.resize(GRID_ROWS);
+    for(int i = 0; i < GRID_ROWS; i++){
+        map_[i].resize(GRID_COLS);
+    }
+    for(int i = 0; i < GRID_ROWS; i++) { 
+        for(int j = 0; j < GRID_COLS; j++) {
+            if ((i >= 9 && i <= 11 && j >= 9 && j <= 11 ) || 
+                    (i >= 8 && i <= 19 && j >= 5 && j <= 6) ||
+                        (i >= 0 && i <= 10 && j >= 15 && j <= 16)){
+                map_[i][j] = 0;
+            }
+            else {
+                map_[i][j] = 1;
+            }
+        }
+    }
+}
 
 bool ValidityChecker::isValid(const ob::State* state) const
 {
@@ -61,5 +78,14 @@ double ValidityChecker::clearance(const ob::State* state) const
     double y = pos -> values[1];
     const auto *rot = se2state -> as<ob::SO2StateSpace::StateType>(1);
 
-    return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
+    if(x < 1 || x > 19 || y < 1 || y > 19){
+        return 0;
+    }
+
+    int x_map = GRID_ROWS - round(y);
+    int y_map = round(x);
+    // std::cout << x_map << ',' << y_map << std::endl;
+
+    // return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
+    return map_[x_map][y_map] == 1;
 }

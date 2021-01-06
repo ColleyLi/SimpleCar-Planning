@@ -10,6 +10,9 @@
 
 namespace ob = ompl::base;
 
+#define GRID_ROWS 20
+#define GRID_COLS 20
+
 class ValidityChecker: public ob::StateValidityChecker
 {
     public:
@@ -18,6 +21,8 @@ class ValidityChecker: public ob::StateValidityChecker
         virtual bool isValid(const ob::State* state) const;
 
         double clearance(const ob::State* state) const;
+
+        std::vector<std::vector<int>> map_;
 };
 
 #endif // VALIDITY_CHECKER_H
