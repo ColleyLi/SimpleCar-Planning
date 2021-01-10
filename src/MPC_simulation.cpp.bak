@@ -1,0 +1,12 @@
+#include <iostream>
+#include "SimpleCarMPC.h"
+
+int main()
+{
+    std::cout << "MPC Simulation ..." << std::endl;
+    SimpleCarMPC scm;
+    std::cout << "here 0" << std::endl;
+    scm.PathTracking();
+
+    return 0;
+}

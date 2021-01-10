@@ -1,0 +1,251 @@
+// #include <acado_toolkit.hpp>
+// #include <acado_gnuplot.hpp>
+// #include <math.h>
+#include <acado_toolkit.hpp>
+#include <acado_optimal_control.hpp>
+#include <acado_gnuplot.hpp>
+#include <acado/function/function.hpp>
+#include <acado/symbolic_expression/symbolic_expression.hpp>
+#include <acado/utils/acado_utils.hpp>
+#include <acado/user_interaction/user_interaction.hpp>
+
+#include "SimpleCarMPC.h"
+
+SimpleCarMPC::SimpleCarMPC()
+{
+    std::cout << "here 1" << std::endl;
+    // Differential equation
+    f << dot(x) == u0 * cos(theta);
+    f << dot(y) == u0 * sin(theta);
+    f << dot(theta) == u0 * tan(u1) / wheelbase;  // the wheelbase length
+
+    std::string states_file = "../data/simple_car_path_geometric.txt";
+    std::ifstream xref(states_file);
+    std::string output_dir = "../data/output_states.txt";
+    output_file = std::ofstream(output_dir);
+
+    ref_states = std::vector<std::vector<double>>(totalSteps, std::vector<double>(3));
+    std::cout << "here 1" << std::endl;
+    
+    /* Populate reference vectors from file*/
+    // for(int i = 0; i < totalSteps; )
+    // {
+    //     std::string line;
+    //     std::getline(xref, line);
+    //     std::istringstream iss(line);
+    //     for(int x = 0; x < 3; x++)
+    //         iss >> ref_states[i][x];
+    // }
+    ref_states.resize(totalSteps);
+    for(int i = 0; i < totalSteps; i++){
+        ref_states[i].resize(3);
+    }
+    for(std::vector<std::vector<double>>::iterator vvit = ref_states.begin(), 
+                                    vvend = ref_states.end(); vvit != vvend; vvit++)
+    {
+        std::string line;
+        std::getline(xref, line);
+        std::istringstream iss(line);
+        for(std::vector<double>::iterator vit = (*vvit).begin(), 
+                                    vend = (*vvit).end(); vit != vend; vit++)
+        {
+            iss >> *vit;
+        }
+    }
+    std::cout << "here 2" << std::endl;
+
+    prop_steps = int(double(numSteps)/te)/(totalSteps/tfinal);
+
+    timeGrid = Grid(ts, te, numSteps);
+    output_states = VariablesGrid(3, timeGrid);
+
+    /* Initialize output variables */
+    for(int x = 0; x < 3; x++)
+        output_states(prop_steps,x) = ref_states[prop_steps][x];
+    std::cout << "here 3" << std::endl;
+    
+}
+void SimpleCarMPC::solveMPC(double time)
+{
+    std::cout << "enter" << std::endl;
+    /* If current step is larger than totalSteps, stop timer */
+    to = int(time) * double(totalSteps)/double(tfinal);
+    if(to > totalSteps) {
+        return;
+    }
+    std::cout << "here 1" << std::endl;
+    // // ROS_INFO("Current : %f %f %f", quadPose.pose.position.x, 
+    // //   quadPose.pose.position.y, quadPose.pose.position.z);
+
+    int R = double(numSteps)*double(tfinal)/(te*totalSteps);
+    double tnow = time;
+    VariablesGrid reference_grid(3, timeGrid);
+    VariablesGrid init_states(3, timeGrid);
+
+    for(int t = 0; t < numSteps; t++)
+    {
+        std::cout << "here 2" << std::endl;
+        double future_time = tnow + double(t)*te/double(numSteps);
+        int step_reference = int(future_time*double(totalSteps)/double(tfinal));
+        step_reference = step_reference < totalSteps ? step_reference : totalSteps - 1;
+        // ROS_INFO("future_time : %f, step : %i", future_time, step_reference);
+        int next_step = step_reference + 1 < totalSteps ? step_reference + 1 : totalSteps-1;
+        int nr = (t+to*R)%R; double k = double(nr)/double(numSteps)*te;
+
+        for(int x=0; x < 3; x++)
+            reference_grid(t,x) = (1.0 - k)*ref_states[step_reference][x] + k*ref_states[next_step][x];
+
+        for(int x = 0; x < 3; x++)
+            init_states(t,x) = reference_grid(t,x);
+    }
+    // const double wheelbase = 1.0;
+    // double simTs = 0.4;
+    // double Num = 50;
+    // double numSteps = 2;
+
+    // // Variables
+    // DifferentialState x;
+    // DifferentialState y;
+    // DifferentialState theta;
+
+    // Control u0; // velocity
+    // Control u1; // steering angle
+
+    // // Differential equation
+    // // DifferentialEquation f;
+    // f << dot(x) == u0 * cos(theta);
+    // f << dot(y) == u0 * sin(theta);
+    // f << dot(theta) == u0 * tan(u1) / wheelbase;  // the wheelbase length
+
+    // Setting up the process
+    // OutputFcn identity;
+    // DynamicSystem dynamicSystem(f, identity);
+
+    // Process process(dynamicSystem, INT_RK45);
+    // process.set(INTEGRATOR_TYPE, INT_EX_EULER);
+    // process.set(NUM_INTEGRATOR_STEPS, numSteps);
+
+    // Objective function
+    Function h;
+    h << x;
+    h << y;
+    h << theta;
+    h << u0;
+    h << u1;
+
+    // Coefficient matrix
+    DMatrix Q(5, 5);
+    Q(0, 0) = 1.0;
+    Q(1, 1) = 1.0;
+    Q(2, 2) = 0.1;
+    Q(3, 3) = 1.0;
+    Q(4, 4) = 1.0;
+
+    // // Reference
+    // DVector r(5);
+    // r(0) = 4.0;
+    // r(1) = 4.0;
+    // r(2) = M_PI / 2;
+    // r(3) = 0.0;
+    // r(4) = 0.0;
+
+    // Define an optimal control problem
+    // const double tStart = 0.0;
+    // const double tEnd = simTs * Num;
+
+    OCP ocp(timeGrid);
+
+    ocp.subjectTo(f);
+
+    ocp.minimizeLSQ(Q, h, reference_grid);
+
+    ocp.subjectTo(AT_START, x == output_states[prop_steps][0]);
+    ocp.subjectTo(AT_START, y == output_states[prop_steps][1]);
+    ocp.subjectTo(AT_START, theta == output_states[prop_steps][2]);
+
+    ocp.subjectTo(0.0 <= x <= 20);
+    ocp.subjectTo(0.0 <= y <= 20);
+    ocp.subjectTo(0.0 <= theta <= 2 * M_PI); // TODO: how to represent S1?
+    ocp.subjectTo(-0.5 <= u0 <= 0.5);
+    ocp.subjectTo(M_PI / 4 <= u1 <= M_PI / 4);
+
+    // Define the solver
+    OptimizationAlgorithm alg(ocp);
+    // alg.set(HESSIAN_APPROXIMATION, GAUSS_NEWTON);
+    // alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
+    // alg.set(PRINTLEVEL, NONE);
+    // alg.set(INTEGRATOR_TYPE, INT_EX_EULER);
+    // alg.set(CG_USE_OPENMP, YES);
+    // alg.set(NUM_INTEGRATOR_STEPS, 2 * numSteps);
+    // alg.set(LEVENBERG_MARQUARDT, 1e-4);
+    // alg.set(QP_SOLVER, QP_QPOASES);
+    // alg.set(SPARSE_QP_SOLUTION, FULL_CONDENSING_N2);
+    // alg.set(HOTSTART_QP, YES);
+
+    alg.set(MAX_NUM_QP_ITERATIONS, 50);
+    alg.set(MAX_NUM_ITERATIONS, 50);
+    alg.set(INFEASIBLE_QP_HANDLING, IQH_STOP);
+    alg.set( INTEGRATOR_TYPE, INT_RK45);
+    alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
+    alg.set( HESSIAN_APPROXIMATION, GAUSS_NEWTON);
+    alg.set(KKT_TOLERANCE, 1e-8);
+
+    alg.initializeDifferentialStates(init_states);
+    // alg.initializeControls(init_controls);
+
+    // Controller controller(alg);
+
+    // DVector x0(3);
+    // x0(0) = 0.0;
+    // x0(1) = 0.0;
+    // x0(2) = M_PI / 2;
+    // // controller.init(0.0, x_);
+    // // controller.step(0.0, x_);
+    // SimulationEnvironment sim(0.0, 20.0, process, controller);
+    // sim.init(x0);
+    // sim.run();
+    if(!alg.solve()){
+        return;
+    }
+
+    alg.getDifferentialStates(output_states);
+    
+
+    // VariablesGrid diffStates;
+    // alg.getDifferentialStates(diffStates);
+
+    // VariablesGrid Control;
+    // alg.getControls(Control);
+
+    // VariablesGrid diffStates;
+    // sim.getProcessDifferentialStates(diffStates);
+
+    // VariablesGrid Control;
+    // sim.getFeedbackControl(Control);
+
+    // GnuplotWindow window;
+    // window.addSubplot(diffStates(0), "x");
+    // window.addSubplot(diffStates(1), "y");
+    // window.addSubplot(diffStates(2), "theta");
+    // window.addSubplot(Control(0), "u0");
+    // window.addSubplot(Control(1), "u1");
+    // window.plot();
+
+    // DVector u;
+    // controller.getU(u);
+    // u.print("control");
+}
+
+void SimpleCarMPC::PathTracking()
+{
+    std::cout << "here p" << std::endl;
+    const double dt = tfinal / totalSteps;
+    for(double t = 0; t < tfinal; t += dt)
+    {
+        std::cout << "here " << t <<std::endl;
+        solveMPC(t);
+        std::cout << output_states[prop_steps][0] << \
+                        output_states[prop_steps][1] << \
+                            output_states[prop_steps][2] << std::endl;
+    }
+}

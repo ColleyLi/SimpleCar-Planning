@@ -10,9 +10,9 @@ int main(int /*argc*/, char ** /*argv*/)
 
     SimpleCarPlanning scp;
     scp.plan();
-    // scp.planWithApp();
+    scp.planWithApp();
     scp.PlanGeometric();
-    // scp.PlanGeometricWithApp();
+    scp.PlanGeometricWithApp();
 
     return 0;
 }

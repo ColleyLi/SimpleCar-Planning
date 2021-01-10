@@ -9,6 +9,7 @@
 #include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <ompl/base/objectives/StateCostIntegralObjective.h>
 #include <ompl/config.h>
 
 namespace ob = ompl::base;
@@ -26,10 +27,11 @@ namespace og = ompl::geometric;
 namespace oa = ompl::app;
 #endif
 
-class SimpleCarPlanning{
+class SimpleCarPlanning
+{
     public:
-        constexpr static double wheelbase_ = 0.3;
-        double track_;
+        constexpr static double wheelbase_ = 1.0; // 1 m(set the size to be compatible with the .dae map)
+        // double track_;
         double max_steering_angle_;
 
         SimpleCarPlanning();
@@ -39,6 +41,8 @@ class SimpleCarPlanning{
                         const oc::Control* control, oc::ODESolver::StateType& qdot);
         void static postPropagate(const ob::State* state, const oc::Control* control, 
                         const double duration, ob::State* result);
+        ob::OptimizationObjectivePtr getBalancedObjective(const ob::SpaceInformationPtr& si);
+
         void plan();
         void planWithApp();
         void PlanGeometric();
@@ -48,6 +52,19 @@ class SimpleCarPlanning{
         std::string path_filename_app_;
         std::string path_filename_geometric_;
         std::string path_filename_geometric_app_;
+};
+
+class ClearanceObjective : public ob::StateCostIntegralObjective
+{
+    public:
+        ClearanceObjective(const ob::SpaceInformationPtr& si) :
+            ob::StateCostIntegralObjective(si, true)
+        {
+        }
+        ob::Cost stateCost(const ob::State* s) const
+        {
+            return ob::Cost(1 / si_->getStateValidityChecker()->clearance(s));
+        }
 };
 
 #endif // SIMPLE_CAR_PLANNING_H

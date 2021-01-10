@@ -33,11 +33,13 @@ add_library(${PROJECT_NAME} SHARED
   src/SimpleCarPlanning.cpp
   src/ValidityChecker.cpp
   src/RRTX.cpp
+  # src/SimpleCarMPC.cpp
 )
 # Link other libraries if necessary
 target_link_libraries(${PROJECT_NAME}
   ${OMPL_LIBRARIES}
   ${OMPLAPP_LIBRARIES}
+  ${ACADO_SHARED_LIBRARIES}
 )
 
 # Set output executable directory
@@ -50,6 +52,9 @@ target_link_libraries(SimpleCarMain
   ${OMPL_LIBRARIES}
   ${OMPLAPP_LIBRARIES}
 )
+
+# Several demos to learn and play
+
 # add_executable(RigidBodyPlanning 
 #   src/RigidBodyPlanning.cpp
 # )
@@ -62,5 +67,26 @@ target_link_libraries(SimpleCarMain
 # target_link_libraries(RigidBodyPlanningWithODESolverAndControls
 #   ${OMPL_LIBRARIES}
 # )
-add_executable(MPC src/MPC.cpp)
-target_link_libraries(MPC ${ACADO_SHARED_LIBRARIES})
+# add_executable(MPC_simulation src/MPC_simulation.cpp)
+# target_link_libraries(MPC_simulation
+#   ${PROJECT_NAME}
+#   ${ACADO_SHARED_LIBRARIES}
+# )
+
+# Add executables
+
+# add_executable(MPC src/MPC.cpp)
+# target_link_libraries(MPC
+#   ${PROJECT_NAME}
+#   ${ACADO_SHARED_LIBRARIES}
+# )
+add_executable(MPC_simulate src/MPC_simulate.cpp)
+target_link_libraries(MPC_simulate
+  ${PROJECT_NAME}
+  ${ACADO_SHARED_LIBRARIES}
+)
+add_executable(MPC_simulate_app src/MPC_simulate_app.cpp)
+target_link_libraries(MPC_simulate_app
+  ${PROJECT_NAME}
+  ${ACADO_SHARED_LIBRARIES}
+)

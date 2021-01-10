@@ -33,10 +33,11 @@
 *********************************************************************/
 
 /* Author: Ioan Sucan */
-/* Modificator: Jianfeng Cui */
 
 /**
- * Define the simple car properties.
+ * Simple car planning with OMPL
+ * useful examples from http://ompl.kavrakilab.org/tutorials.html
+ * Modificator: Jianfeng Cui
 */
 
 #include "SimpleCarPlanning.h"
@@ -50,6 +51,7 @@
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/geometric/PathSimplifier.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <iostream>
 #include <fstream>
 #include <boost/math/constants/constants.hpp>
@@ -57,13 +59,13 @@
 
 SimpleCarPlanning::SimpleCarPlanning()
 {
-    track_ = 0.2;
-    // The extreme steering angle is set as 35[deg] / 180 * pi = 0.6[rad]
-    max_steering_angle_ = 0.6;
-    path_filename_ = "simple_car_path.txt";
-    path_filename_app_ = "simple_car_path_app.txt";
-    path_filename_geometric_ = "simple_car_path_geometric.txt";
-    path_filename_geometric_app_ = "simple_car_path_geometric_app.txt";
+    // track_ = 0.2;
+    // The extreme steering angle is set as 60[deg] / 180 * pi = 1.0[rad]
+    max_steering_angle_ = 1.0;
+    path_filename_ = "../data/simple_car_path.txt";
+    path_filename_app_ = "../data/simple_car_path_app.txt";
+    path_filename_geometric_ = "../data/simple_car_path_geometric.txt";
+    path_filename_geometric_app_ = "../data/simple_car_path_geometric_app.txt";
 }
 
 void SimpleCarPlanning::propagate(const ob::State *start, const oc::Control *control, const double duration, ob::State *result)
@@ -111,6 +113,14 @@ void SimpleCarPlanning::postPropagate(const ob::State* state,
     SO2.enforceBounds(s[1]);
 }
 
+ob::OptimizationObjectivePtr SimpleCarPlanning::getBalancedObjective(const ob::SpaceInformationPtr& si)
+{
+    ob::OptimizationObjectivePtr lengthObj(new ob::PathLengthOptimizationObjective(si));
+    ob::OptimizationObjectivePtr clearObj(new ClearanceObjective(si));
+
+    return lengthObj + 5 * clearObj;
+}
+
 void SimpleCarPlanning::plan()
 {
     // construct the state space we are planning in
@@ -118,8 +128,10 @@ void SimpleCarPlanning::plan()
 
     // set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
-    bounds.setLow(0.0);
-    bounds.setHigh(20.0);
+    bounds.setLow(0, 0.0);
+    bounds.setHigh(0, 200.0);
+    bounds.setLow(1, 0.0);
+    bounds.setHigh(1, 200.0);
 
     space -> setBounds(bounds);
 
@@ -128,8 +140,8 @@ void SimpleCarPlanning::plan()
 
     // set the bounds for the control space
     ob::RealVectorBounds cbounds(2);
-    cbounds.setLow(0, -0.5);
-    cbounds.setHigh(0, 0.5);
+    cbounds.setLow(0, -10.0);
+    cbounds.setHigh(0, 10.0);
     cbounds.setLow(1, - max_steering_angle_);
     cbounds.setHigh(1, max_steering_angle_);
 
@@ -162,21 +174,21 @@ void SimpleCarPlanning::plan()
 
     // create a start state
     ob::ScopedState<ob::SE2StateSpace> start(space);
-    start->setX(2.0);
-    start->setY(2.0);
+    start->setX(20.0);
+    start->setY(20.0);
     start->setYaw(0.0);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(18.0);
-    goal->setY(18.0);
+    goal->setX(180.0);
+    goal->setY(180.0);
     goal->setYaw(boost::math::constants::pi<double>() / 2);
 
     // create a problem instance
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
 
     // set the start and goal states
-    pdef -> setStartAndGoalStates(start, goal, 0.05);
+    pdef -> setStartAndGoalStates(start, goal, 0.5);
 
     // create a planner for the defined space
     auto planner(std::make_shared<oc::RRT>(si));
@@ -303,11 +315,13 @@ void SimpleCarPlanning::PlanGeometric()
     // set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
     bounds.setLow(0.0);
-    bounds.setHigh(20.0);
+    bounds.setHigh(200.0);
+    bounds.setLow(1, 0.0);
+    bounds.setHigh(1, 200.0);
 
     space->setBounds(bounds);
 
-    // construct an instance of  space information from this state space
+    // construct an instance of space information from this state space
     auto si(std::make_shared<ob::SpaceInformation>(space));
 
     // set state validity checking for this space
@@ -315,25 +329,28 @@ void SimpleCarPlanning::PlanGeometric()
 
     // create a start state
     ob::ScopedState<ob::SE2StateSpace> start(space);
-    start->setX(2.0);
-    start->setY(2.0);
+    start->setX(20.0);
+    start->setY(20.0);
     start->setYaw(0.0);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
-    goal->setX(18.0);
-    goal->setY(18.0);
+    goal->setX(180.0);
+    goal->setY(180.0);
     goal->setYaw(boost::math::constants::pi<double>() / 2);
 
     // create a problem instance
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
 
     // set the start and goal states
-    pdef -> setStartAndGoalStates(start, goal, 0.05);
+    pdef -> setStartAndGoalStates(start, goal, 0.5);
+
+    // set the optimiaztion objective as a trade-off between clearance and path length
+    pdef -> setOptimizationObjective(getBalancedObjective(si));
 
     // create a planner for the defined space
-    auto planner(std::make_shared<ompl::RRTX>(si));
-    // auto planner(std::make_shared<og::RRTstar>(si));
+    // auto planner(std::make_shared<ompl::RRTX>(si));
+    auto planner(std::make_shared<og::RRTstar>(si));
 
     // set the problem we are trying to solve for the planner
     planner->setProblemDefinition(pdef);
@@ -358,8 +375,10 @@ void SimpleCarPlanning::PlanGeometric()
         ob::PathPtr path = pdef -> getSolutionPath();
         // BSpline smoothless
         og::PathSimplifierPtr ps;
+
         auto path_geometric = path -> as<og::PathGeometric>();
         ps -> smoothBSpline(*path_geometric);
+
         std::cout << "Found solution:" << std::endl;
 
         // print the path to screen
@@ -415,7 +434,11 @@ void SimpleCarPlanning::PlanGeometricWithApp()
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);
 
-    setup.setPlanner(std::make_shared<ompl::RRTX>(setup.getSpaceInformation()));
+    // setup.setPlanner(std::make_shared<ompl::RRTX>(setup.getSpaceInformation()));
+    setup.setPlanner(std::make_shared<og::RRTstar>(setup.getSpaceInformation()));
+
+    // set the optimiaztion objective as a trade-off between clearance and path length
+    setup.setOptimizationObjective(getBalancedObjective(setup.getSpaceInformation()));
 
     setup.setup();
 

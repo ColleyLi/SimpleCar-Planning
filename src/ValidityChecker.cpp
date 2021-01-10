@@ -1,43 +1,8 @@
-/*********************************************************************
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2011, Rice University
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of the Rice University nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*********************************************************************/
-
-/* Author: Luis G. Torres, Jonathan Gammell */
-/* Modificator: Jianfeng Cui */
-
-/**
- * Define the state validity checker
+/* 
+Manually define the map using the ValidityChecker
+@Author: Jianfeng Cui 
 */
+
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
@@ -53,9 +18,9 @@ ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateVa
     }
     for(int i = 0; i < GRID_ROWS; i++) { 
         for(int j = 0; j < GRID_COLS; j++) {
-            if ((i >= 9 && i <= 11 && j >= 9 && j <= 11 ) || 
-                    (i >= 8 && i <= 19 && j >= 5 && j <= 6) ||
-                        (i >= 0 && i <= 10 && j >= 15 && j <= 16)){
+            if ((i >= 90 && i <= 100 && j >= 90 && j <= 100 ) || 
+                    (i >= 80 && i <= 199 && j >= 50 && j <= 55) ||
+                        (i >= 0 && i <= 100 && j >= 150 && j <= 155)){
                 map_[i][j] = 0;
             }
             else {
@@ -78,14 +43,22 @@ double ValidityChecker::clearance(const ob::State* state) const
     double y = pos -> values[1];
     const auto *rot = se2state -> as<ob::SO2StateSpace::StateType>(1);
 
-    if(x < 1 || x > 19 || y < 1 || y > 19){
+    if(x < 1 + 5 || x > 199 - 5 || y < 1 + 5 || y > 199 - 5){
         return 0;
     }
 
     int x_map = GRID_ROWS - round(y);
     int y_map = round(x);
-    // std::cout << x_map << ',' << y_map << std::endl;
+
+    for(int j = x_map - 5; j < x_map + 5; j++)
+    {
+        for(int i = y_map - 5; i < y_map + 5; i++)
+        {
+            if(map_[j][i] == 0) return 0;
+        }
+    }
 
     // return sqrt((x-0.0)*(x-0.0)+(y-0.0)*(y-0.0)) - 9;
-    return map_[x_map][y_map] == 1;
+    // return map_[x_map][y_map] == 1;
+    return 1;
 }

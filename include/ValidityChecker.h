@@ -10,8 +10,8 @@
 
 namespace ob = ompl::base;
 
-#define GRID_ROWS 20
-#define GRID_COLS 20
+#define GRID_ROWS 200
+#define GRID_COLS 200
 
 class ValidityChecker: public ob::StateValidityChecker
 {
