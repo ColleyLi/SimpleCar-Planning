@@ -1,5 +1,5 @@
 # SimpleCar-Planning
-Planning and Decision Making(RO47005) course project of group 9.
+PDM course project of group 9.
 
 This repository is for the planning and control of the simple car model. It is developed based on C++ using [OMPL](http://ompl.kavrakilab.org/) and [ACADO Toolkit](http://acado.github.io/). In this scenario the kinematics car plans the path with RRT star and is controlled by MPC.
 
