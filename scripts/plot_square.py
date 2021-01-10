@@ -17,18 +17,17 @@ def plot_vehicle_state(ax, state):
     slong = 10 # longitudinal size (decimeter)
     slat = 10 # lateral size (decimeter)
     
-    # car outset
-    lines = box_in_frame(ax, 0, 0, slat, slong, R, T, c='k')
+    lines = box_in_frame(ax, slat, slong, R, T, c='k')
     return lines
 
 def box_in_frame(ax, cx, cy, w, h, R, T, c='k'):
-    # car outset
+    # car shape, a square
     points = np.array([
         [1, -1, -1,  1,  1],
         [-1, -1,  1,  1, -1]
     ])
-    points[0,:] = points[0,:] * w/2. + cx;
-    points[1,:] = points[1,:] * h/2. + cy;
+    points[0,:] = points[0,:] * w/2.;
+    points[1,:] = points[1,:] * h/2.;
     lines = plot_in_frame(ax, points, R, T, c=c)
     return lines
 
@@ -39,6 +38,7 @@ def plot_in_frame(ax, points, R, T, c):
     return lines
 
 def plot_arrow(ax, state, state_next):
+    # plot an arrow starting at the center of the car, pointing towards orientation
     L = 15
     dx = L*np.cos(state[2])
     dy = L*np.sin(state[2])
