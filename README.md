@@ -20,7 +20,7 @@ cd SimpleCar-Planning
 chmod +x build.sh
 ./build.sh
 ```
-This will create **libsimple_car.so** at*lib*folder and the executables **SimpleCarMain**, **MPC_simulate** and **MPC_simulate_app** at*bin*folder. 
+This will create **libsimple_car.so** at *lib* folder and the executables **SimpleCarMain**, **MPC_simulate** and **MPC_simulate_app** at *bin* folder. Besides, folder *data* is built to store running results later. 
 
 ## 3. Run the project
 Two environments are used in the repository: a manually designed map using grids and imported environment file Barriers_easy_env.dae. The later one is for the use of ompl.app, and in order to make the robot compatible with the environment, a simple car model kinematics_car.dae is drawed using [SketchUp](https://app.sketchup.com/app).
@@ -30,12 +30,12 @@ In both scenarios, firstly we test an approach of OMPL to plan with control spac
 cd bin
 ./SimpleCarMain
 ```
-Four corresponding path file simple_car_path.txt, simple_car_path_app.txt, simple_car_path_geometric.txt, simple_car_path_geometric_app.txt will be generated in the*data*folder. The later two files will be used in MPC as the reference trajectory. Execute:
+Four corresponding path file simple_car_path.txt, simple_car_path_app.txt, simple_car_path_geometric.txt, simple_car_path_geometric_app.txt will be generated in the *data* folder. The later two files will be used in MPC as the reference trajectory. Execute:
 ```
 ./MPC_simulate
 ./MPC_simulate_app
 ```
-Four files will be generated at*data*folder: output_states.txt, output_states_app.txt, output_controls.txt, output_controls_app.txt
+Four files will be generated at *data* folder: output_states.txt, output_states_app.txt, output_controls.txt, output_controls_app.txt
 
 ## 4. Visualize the result
 
