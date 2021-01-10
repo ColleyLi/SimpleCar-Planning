@@ -1,6 +1,9 @@
 /**
- * Define the simple car properties.
+ * Simple car planning with OMPL
+ * useful examples from http://ompl.kavrakilab.org/tutorials.html
+ * Modificator: Jianfeng Cui
 */
+
 #ifndef SIMPLE_CAR_PLANNING_H
 #define SIMPLE_CAR_PLANNING_H
 
@@ -16,8 +19,11 @@ namespace ob = ompl::base;
 namespace oc = ompl::control;
 namespace og = ompl::geometric;
 
+// NOTE: 
+// Now the ompl_app is supposed to be installed to complie planWithApp() and PlanGeometricWithApp()
+// It provides the PCL library to do with collision checking and ompl GUI
+// TODO: furthur flexible adaptation
 #define USE_PCL_COLLCHECK 1
-
 #if USE_PCL_COLLCHECK == 1
 // #include <omplapp/geometry/RigidBodyGeometry.h>
 // #include <omplapp/apps/AppBase.h>
@@ -30,7 +36,7 @@ namespace oa = ompl::app;
 class SimpleCarPlanning
 {
     public:
-        constexpr static double wheelbase_ = 1.0; // 1 m(set the size to be compatible with the .dae map)
+        constexpr static double wheelbase_ = 10.0; // 1 m(set the size to be compatible with the .dae map)
         // double track_;
         double max_steering_angle_;
 

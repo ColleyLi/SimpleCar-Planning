@@ -1,6 +1,6 @@
-/* 
-Manually define the map using the ValidityChecker
-@Author: Jianfeng Cui 
+/**
+*   Manually define the map using the ValidityChecker
+*   Author: Jianfeng Cui 
 */
 
 #include <ompl/base/StateValidityChecker.h>
@@ -12,6 +12,7 @@ Manually define the map using the ValidityChecker
 
 ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateValidityChecker(si)
 {
+    // Define the map with obstacles
     map_.resize(GRID_ROWS);
     for(int i = 0; i < GRID_ROWS; i++){
         map_[i].resize(GRID_COLS);
@@ -37,6 +38,7 @@ bool ValidityChecker::isValid(const ob::State* state) const
 
 double ValidityChecker::clearance(const ob::State* state) const
 {
+    // Design the collision checking and clearance calculation
     const auto *se2state = state -> as<ob::SE2StateSpace::StateType>();
     const auto *pos = se2state -> as<ob::RealVectorStateSpace::StateType>(0);
     double x = pos -> values[0];

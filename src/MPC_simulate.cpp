@@ -1,7 +1,7 @@
 /**
  * Model predictive control with ACADO using simulation environment
  * to track the path generated manually by ompl
- * author: Jianfeng Cui
+ * author: Jianfeng Cui, Yulei Qiu
 */
 
 #include <acado_toolkit.hpp>

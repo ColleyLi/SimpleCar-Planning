@@ -1,6 +1,8 @@
 /**
- * Define the state validity checker
+*   Manually define the map using the ValidityChecker
+*   Author: Jianfeng Cui 
 */
+
 #ifndef VALIDITY_CHECKER_H
 #define VALIDITY_CHECKER_H
 
