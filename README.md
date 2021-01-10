@@ -48,3 +48,8 @@ The left figure shows the reference and tracking trajectory under the self-desig
 ![tracking](README.assets/tracking.gif)
 
 ![tracking_app](README.assets/tracking_app.gif)
+
+## 5. Other notes
+
+* In order to make the robot and environment .dae model compatible, the unit is set as [0.1m]. And the vehicle wheelbase is assumed 1m. In the manual map, the workspace bounds are 20m x 20m, and in the .dae environment it is 65m x 44m. 
+* During planning: use collision checker with 2D vector grid to achieve the manual map and collision checking, a balanced objective between path length and clearance. When trying planning with control space, either (post)propagate or ODE could be used to propagate.
