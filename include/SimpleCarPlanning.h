@@ -47,6 +47,7 @@ class SimpleCarPlanning
                         const oc::Control* control, oc::ODESolver::StateType& qdot);
         void static postPropagate(const ob::State* state, const oc::Control* control, 
                         const double duration, ob::State* result);
+        ob::OptimizationObjectivePtr getBalancedObjectiveForGrid(const ob::SpaceInformationPtr& si);
         ob::OptimizationObjectivePtr getBalancedObjective(const ob::SpaceInformationPtr& si);
 
         void plan();

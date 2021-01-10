@@ -25,6 +25,7 @@ class ValidityChecker: public ob::StateValidityChecker
         double clearance(const ob::State* state) const;
 
         std::vector<std::vector<int>> map_;
+        std::vector<std::vector<int>> clr_matrix_;
 };
 
 #endif // VALIDITY_CHECKER_H

@@ -113,12 +113,20 @@ void SimpleCarPlanning::postPropagate(const ob::State* state,
     SO2.enforceBounds(s[1]);
 }
 
+ob::OptimizationObjectivePtr SimpleCarPlanning::getBalancedObjectiveForGrid(const ob::SpaceInformationPtr& si)
+{
+    ob::OptimizationObjectivePtr lengthObj(new ob::PathLengthOptimizationObjective(si));
+    ob::OptimizationObjectivePtr clearObj(new ClearanceObjective(si));
+
+    return lengthObj + 20 * clearObj;
+}
+
 ob::OptimizationObjectivePtr SimpleCarPlanning::getBalancedObjective(const ob::SpaceInformationPtr& si)
 {
     ob::OptimizationObjectivePtr lengthObj(new ob::PathLengthOptimizationObjective(si));
     ob::OptimizationObjectivePtr clearObj(new ClearanceObjective(si));
 
-    return lengthObj + 5 * clearObj;
+    return lengthObj + 10 * clearObj;
 }
 
 void SimpleCarPlanning::plan()
@@ -331,7 +339,7 @@ void SimpleCarPlanning::PlanGeometric()
     ob::ScopedState<ob::SE2StateSpace> start(space);
     start->setX(20.0);
     start->setY(20.0);
-    start->setYaw(0.0);
+    start->setYaw(boost::math::constants::pi<double>() / 2);
 
     // create a goal state
     ob::ScopedState<ob::SE2StateSpace> goal(start);
@@ -346,7 +354,7 @@ void SimpleCarPlanning::PlanGeometric()
     pdef -> setStartAndGoalStates(start, goal, 0.5);
 
     // set the optimiaztion objective as a trade-off between clearance and path length
-    pdef -> setOptimizationObjective(getBalancedObjective(si));
+    pdef -> setOptimizationObjective(getBalancedObjectiveForGrid(si));
 
     // create a planner for the defined space
     // auto planner(std::make_shared<ompl::RRTX>(si));
