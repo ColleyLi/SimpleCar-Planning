@@ -20,7 +20,7 @@ def plot_vehicle_state(ax, state):
     lines = box_in_frame(ax, slat, slong, R, T, c='k')
     return lines
 
-def box_in_frame(ax, cx, cy, w, h, R, T, c='k'):
+def box_in_frame(ax, w, h, R, T, c='k'):
     # car shape, a square
     points = np.array([
         [1, -1, -1,  1,  1],

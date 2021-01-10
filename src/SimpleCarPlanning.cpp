@@ -42,7 +42,7 @@
 
 #include "SimpleCarPlanning.h"
 #include "ValidityChecker.h"
-#include "RRTX.h"
+// #include "RRTX.h"
 
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>

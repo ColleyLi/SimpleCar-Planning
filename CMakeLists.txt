@@ -32,7 +32,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 add_library(${PROJECT_NAME} SHARED
   src/SimpleCarPlanning.cpp
   src/ValidityChecker.cpp
-  src/RRTX.cpp
+  # src/RRTX.cpp
   # src/SimpleCarMPC.cpp
 )
 # Link other libraries if necessary
