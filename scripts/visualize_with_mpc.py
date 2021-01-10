@@ -17,8 +17,8 @@ line1, = axes[0].plot(data1[:,0], data1[:,1], 'orange', linewidth=1.5, alpha=0.8
 line2, = axes[1].plot(data2[:,0], data2[:,1], 'orange', linewidth=1.5, alpha=0.8, label='ref')
 line3, = axes[0].plot(data3[:,0], data3[:,1], 'blue', linewidth=1.5, alpha=0.8, label='mpc')
 line4, = axes[1].plot(data4[:,0], data4[:,1], 'blue', linewidth=1.5, alpha=0.8, label='mpc')
-axes[0].legend([line1, line3])
-axes[1].legend([line2, line4])
+axes[0].legend([line1, line3],['Reference', 'MPC'])
+axes[1].legend([line2, line4],['Reference', 'MPC'])
 
 # map with obstacles
 
