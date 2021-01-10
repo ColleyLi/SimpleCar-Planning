@@ -9,7 +9,6 @@
 
 #include "ValidityChecker.h"
 
-
 ValidityChecker::ValidityChecker(const ob::SpaceInformationPtr &si): ob::StateValidityChecker(si)
 {
     // Draw the map with obstacles(0) and available(1)

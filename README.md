@@ -48,4 +48,3 @@ The left figure shows the reference and tracking trajectory under the self-desig
 ![tracking](README.assets/tracking.gif)
 
 ![tracking_app](README.assets/tracking_app.gif)
-

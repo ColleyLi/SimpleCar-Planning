@@ -1,2 +1,5 @@
 build/
+bin/
+data/
+lib/
 .vscode
