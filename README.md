@@ -1,8 +1,6 @@
 # SimpleCar-Planning
 Planning and Decision Making(RO47005) course project of group 9.
 
-**Group members**: Jianfeng Cui - 5225256, Yulei Qiu - 5233178, Yurui Du - 5217849, Chenghao Xu - 5266068
-
 This repository is for the planning and control of the simple car model. It is developed based on C++ using [OMPL](http://ompl.kavrakilab.org/) and [ACADO Toolkit](http://acado.github.io/). In this scenario the kinematics car plans the path with RRT star and is controlled by MPC.
 
 ## 1. Prerequisites
@@ -48,6 +46,8 @@ The left figure shows the reference and tracking trajectory under the self-desig
 ![tracking](README.assets/tracking.gif)
 
 ![tracking_app](README.assets/tracking_app.gif)
+
+![tracking_app_static](README.assets/tracking_app_static.png)
 
 ## 5. Other notes
 
