@@ -1,20 +1,14 @@
 # SimpleCar-Planning
-Planning and Decision Making(RO47005) course project
+Planning and Decision Making(RO47005) course project of group 9.
 
-**Group member**:
+**Group members**: Jianfeng Cui - 5225256, Yulei Qiu - ... 
 
-* Jianfeng Cui - 5225256, ...
+This repository is for the planning and control of the simple car model. It is developed based on C++ using [OMPL](http://ompl.kavrakilab.org/) and [ACADO Toolkit](http://acado.github.io/). In this scenario the kinematics car plans the path with RRT star and is controlled by MPC.
 
-## TODO:
-(possibly)必做：
-1. Trajectory optimization（可先跳过）
-2. 我已完成planning部分，接下来研究根据得到的path.txt文件写control部分的MPC(当下重点). promising approach：ACADO Toolkit（基于C++）
-3. 论文编写。Note：目前使用了Planning algorithms中的Simple Car model，基于kinematics，没记错的话在书上chapter 13 differential constraints附近
+## 1. Prerequisites
+The library is tested on **Ubuntu 18.04**, but it should be easy to complie in other platforms.
+### OMPL
+We use [OMPL](http://ompl.kavrakilab.org/) to perform the planning task. Download and install instructions can be found at: http://ompl.kavrakilab.org/download.html. We recommend to install the OMPL.app from source. OMPL.app provides GUI and bindings to FCL and also includes the core OMPL library. **Tested with OMPL.app 1.5.1**
 
-(前面工作基本完成后再)可选：
-1. Self-customized map
-2. Adding a new planner
-3. 优化代码结构
-
-## Dependencies:
-安装好ompl，趟了两天坑提醒一下注意从源码安装。
+### ACADO Toolkit
+For the task of control and with optimization, we use [ACADO Toolkit](http://acado.github.io/) to perform the Model Predictive Control. Instructions of building with C++ library can be found at: http://acado.github.io/install_linux.html. 
