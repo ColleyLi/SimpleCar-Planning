@@ -41,7 +41,7 @@ int main()
         std::cerr << "failed to store the reference in ref_states!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    const double tTotal = 90.0;
+    const double tTotal = 110.0;
     const int totalSteps = num_waypoints - 1;
     // const double dt = tTotal / totalSteps;
 
