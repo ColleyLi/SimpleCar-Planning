@@ -41,13 +41,13 @@ int main()
         std::cerr << "failed to store the reference in ref_states!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    const double tTotal = 60.0;
+    const double tTotal = 70.0; // Total time: 70s
     const int totalSteps = num_waypoints - 1;
     const double dt = tTotal / totalSteps;
 
     // Parameters setting
     const double tStart = 0.0;
-    const int numSteps = 20; // N = 20
+    const int numSteps = 25; // time horizon: N = 25
     const double tEnd = tStart + numSteps * dt;
 
     // Variables
@@ -69,7 +69,7 @@ int main()
 
     Process process(dynamicSystem, INT_RK45);
     process.set(INTEGRATOR_TYPE, INT_EX_EULER);
-    process.set(NUM_INTEGRATOR_STEPS, numSteps);
+    // process.set(NUM_INTEGRATOR_STEPS, numSteps);
 
     // Objective function
     Function h;
@@ -83,9 +83,9 @@ int main()
     DMatrix Q(5, 5);
     Q(0, 0) = 1.0;
     Q(1, 1) = 1.0;
-    Q(2, 2) = 0.1;
-    Q(3, 3) = 1e-4;
-    Q(4, 4) = 1e-4;
+    Q(2, 2) = 0.7;
+    Q(3, 3) = 1e-6;
+    Q(4, 4) = 1e-6;
 
     // Reference
     DVector r(5);
@@ -142,14 +142,14 @@ int main()
     // OptimizationAlgorithm alg(ocp);
 	RealTimeAlgorithm alg(ocp, dt);
 
-    alg.set(HESSIAN_APPROXIMATION, GAUSS_NEWTON);
-    alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
+    // alg.set(HESSIAN_APPROXIMATION, GAUSS_NEWTON);
+    // alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
     // alg.set(PRINTLEVEL, NONE);
     // alg.set(INTEGRATOR_TYPE, INT_EX_EULER);
     // alg.set(CG_USE_OPENMP, YES);
-    alg.set(NUM_INTEGRATOR_STEPS, 2 * numSteps);
+    // alg.set(NUM_INTEGRATOR_STEPS, 2 * numSteps);
     alg.set(LEVENBERG_MARQUARDT, 1e-4);
-    alg.set(QP_SOLVER, QP_QPOASES);
+    // alg.set(QP_SOLVER, QP_QPOASES);
     // alg.set(SPARSE_QP_SOLUTION, FULL_CONDENSING_N2);
     // alg.set(HOTSTART_QP, YES);
 
@@ -157,8 +157,8 @@ int main()
     // alg.set(MAX_NUM_ITERATIONS, 50);
     alg.set(INFEASIBLE_QP_HANDLING, IQH_STOP);
     alg.set(INTEGRATOR_TYPE, INT_RK45);
-    // alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
-    // alg.set(HESSIAN_APPROXIMATION, GAUSS_NEWTON);
+    alg.set(DISCRETIZATION_TYPE, MULTIPLE_SHOOTING);
+    alg.set(HESSIAN_APPROXIMATION, GAUSS_NEWTON);
     alg.set(KKT_TOLERANCE, 1e-8);
 
     // alg.initializeDifferentialStates(init_states);

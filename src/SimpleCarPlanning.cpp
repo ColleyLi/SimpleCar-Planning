@@ -126,7 +126,7 @@ ob::OptimizationObjectivePtr SimpleCarPlanning::getBalancedObjective(const ob::S
     ob::OptimizationObjectivePtr lengthObj(new ob::PathLengthOptimizationObjective(si));
     ob::OptimizationObjectivePtr clearObj(new ClearanceObjective(si));
 
-    return lengthObj + 10 * clearObj;
+    return lengthObj + 0.5 * clearObj;
 }
 
 void SimpleCarPlanning::plan()

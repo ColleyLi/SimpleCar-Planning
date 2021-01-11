@@ -11,9 +11,7 @@ import plot_square as ps
 
 # load data from different approaches and scenarios
 data1 = np.loadtxt('../data/simple_car_path_geometric.txt')
-data2 = np.loadtxt('../data/simple_car_path_geometric_app.txt')
 data3 = np.loadtxt('../data/output_states.txt')
-data4 = np.loadtxt('../data/output_states_app.txt')
 
 # plot the reference track
 fig = plt.figure(figsize=[10,10])
@@ -52,11 +50,11 @@ ax.scatter(20.0, 20.0, c='cyan')
 ax.scatter(180.0, 180.0, c='magenta')
 
 # animate the tracking process
-plt.pause(5.0)
+plt.pause(1.0)
 for i in range(0, data3.shape[0], 80):
     line_square = ps.plot_vehicle_state(ax, data3[i,:])
-    a = ps.plot_arrow(ax, data3[i,:], data3[i+20,:])
-    plt.pause(.01)
+    a = ps.plot_arrow(ax, data3[i,:], data3[min(i+20, data3.shape[0]-1),:]) # if out of bounds
+    plt.pause(.02)
     line_square.remove()
     a.remove()
 

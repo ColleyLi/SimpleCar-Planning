@@ -39,9 +39,9 @@ def plot_in_frame(ax, points, R, T, c):
 
 def plot_arrow(ax, state, state_next):
     # plot an arrow starting at the center of the car, pointing towards orientation
-    L = 15
+    L = 12
     dx = L*np.cos(state[2])
     dy = L*np.sin(state[2])
-    arrow = patches.Arrow( state[0], state[1], dx, dy, width=5 )
+    arrow = patches.Arrow( state[0], state[1], dx, dy, width=3 )
     a = ax.add_patch(arrow)
     return a

@@ -41,13 +41,13 @@ int main()
         std::cerr << "failed to store the reference in ref_states!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    const double tTotal = 110.0;
+    const double tTotal = 120.0;
     const int totalSteps = num_waypoints - 1;
     // const double dt = tTotal / totalSteps;
 
     // Parameters setting
     const double tStart = 0.0;
-    const int numSteps = 20; // N = 20
+    const int numSteps = 25; // N = 30
     const double dt = 0.1;
     const double tEnd = tStart + numSteps * dt;
 
@@ -84,9 +84,9 @@ int main()
     DMatrix Q(5, 5);
     Q(0, 0) = 1.0;
     Q(1, 1) = 1.0;
-    Q(2, 2) = 0.1;
-    Q(3, 3) = 1e-4;
-    Q(4, 4) = 1e-4;
+    Q(2, 2) = 0.7;
+    Q(3, 3) = 1e-6;
+    Q(4, 4) = 1e-6;
 
     // Reference
     DVector r(5);
